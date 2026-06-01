@@ -5,7 +5,7 @@ import MarqueeBanner from "@/app/components/MarqueeBanner";
 import DndScene from "@/app/components/DndScene";
 import DangerBanner from "@/app/components/DangerBanner";
 import Text3DCarousel from "@/app/components/Text3DCarousel";
-import CanAnimation from "@/app/components/CanAnimation"
+import BillboardSection from "@/app/components/BillboardSection"
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <DangerBanner />
       <DndScene />
       <Text3DCarousel />
-      <CanAnimation/>
+      <BillboardSection/>
       
     </main>
   );
