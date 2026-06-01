@@ -15,12 +15,12 @@ const slides = [
     billboardTitle: "Digital Campaign",
     color: "#00E5FF",
     bg: "#06111f",
-    x: 0,
-    y: 0,
-    rotateY: -12,
-    rotateX: 4,
-    image:
-      "https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1600&auto=format&fit=crop",
+    x: 120,
+    y: -90,
+    rotateY: -22,
+    rotateX: 10,
+    rotateZ: 3,
+    image: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?q=80&w=1600&auto=format&fit=crop",
   },
   {
     num: "02",
@@ -29,12 +29,12 @@ const slides = [
     billboardTitle: "Neon Brand System",
     color: "#FF2BD6",
     bg: "#18051f",
-    x: -40,
-    y: 30,
-    rotateY: -6,
-    rotateX: -2,
-    image:
-      "https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1600&auto=format&fit=crop",
+    x: -120,
+    y: 90,
+    rotateY: 18,
+    rotateX: -8,
+    rotateZ: -4,
+    image: "https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1600&auto=format&fit=crop",
   },
   {
     num: "03",
@@ -43,12 +43,12 @@ const slides = [
     billboardTitle: "City Light Motion",
     color: "#8B5CF6",
     bg: "#0f0824",
-    x: 30,
-    y: -35,
-    rotateY: -16,
-    rotateX: 6,
-    image:
-      "https://images.unsplash.com/photo-1515630278258-407f66498911?q=80&w=1600&auto=format&fit=crop",
+    x: 100,
+    y: 110,
+    rotateY: -26,
+    rotateX: -10,
+    rotateZ: 5,
+    image: "https://images.unsplash.com/photo-1515630278258-407f66498911?q=80&w=1600&auto=format&fit=crop",
   },
   {
     num: "04",
@@ -57,12 +57,12 @@ const slides = [
     billboardTitle: "Future Web Motion",
     color: "#4DA3FF",
     bg: "#050b18",
-    x: -20,
-    y: 10,
-    rotateY: -10,
-    rotateX: 3,
-    image:
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1600&auto=format&fit=crop",
+    x: -100,
+    y: -100,
+    rotateY: 22,
+    rotateX: 8,
+    rotateZ: -5,
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1600&auto=format&fit=crop",
   },
 ];
 
@@ -261,7 +261,7 @@ export default function CyberBillboard() {
       />
 
       <div className="relative z-10 grid min-h-screen items-center gap-14 lg:grid-cols-2">
-        <div ref={textRef}>
+        <div ref={textRef}  style={{zIndex: 100,}}>
           <p className="mb-5 text-sm uppercase tracking-[0.4em] text-[#00E5FF]">
             01 / Cyberpunk Showcase
           </p>

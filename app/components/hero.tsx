@@ -154,24 +154,14 @@ export default function Hero() {
 
   return (
     <section
+      id="hero"
       ref={heroRef}
       className="relative min-h-screen overflow-hidden bg-[#050505] px-6 text-white md:px-12"
     >
       <div className="absolute left-[-15%] top-[-20%] h-[600px] w-[600px] rounded-full bg-[#4DA3FF]/20 blur-[150px]" />
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
 
-      <header className="relative z-10 flex items-center justify-between py-6">
-        <div className="font-heading text-xl font-bold">
-          MZ<span className="text-[#4DA3FF]">.</span>
-        </div>
-
-        <nav className="hidden gap-8 text-sm text-white/60 md:flex">
-          <a href="#work" className="hover:text-white">Work</a>
-          <a href="#lab" className="hover:text-white">Lab</a>
-          <a href="#about" className="hover:text-white">About</a>
-          <a href="#contact" className="hover:text-white">Contact</a>
-        </nav>
-      </header>
+      
 
       <div className="relative z-10 flex min-h-[calc(100vh-88px)] items-center">
         <div>
