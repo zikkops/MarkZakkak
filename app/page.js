@@ -9,6 +9,8 @@ import BillboardSection from "@/app/components/BillboardSection"
 import ContactSection from "@/app/components/ContractSection";
 import Footer from "@/app/components/Footer";
 import Header from "@/app/components/Header";
+import LottieScrollShowcase from "@/app/components/LottieScrollShowcase";
+import SplineShowcase from "@/app/components/SplineShowcase";
 
 export default function Home() {
   return (
@@ -18,6 +20,8 @@ export default function Home() {
       <WorkSection />
       <MarqueeBanner />
       <AnimationLab />
+      <SplineShowcase />
+      <LottieScrollShowcase />
       <DangerBanner />
       <DndScene />
       <Text3DCarousel />

@@ -37,18 +37,11 @@ export default function Header() {
 
       gsap.to(header, {
         width: isScrolled ? "92%" : "100%",
-        maxWidth: isScrolled ? "1100px" : "100%",
+        maxWidth: isScrolled ? "1024px" : "100%",
         top: isScrolled ? 20 : 0,
         borderRadius: isScrolled ? 999 : 0,
-        backgroundColor: isScrolled
-          ? "rgba(5,5,5,0.55)"
-          : "rgba(5,5,5,0.95)",
-        borderColor: isScrolled
-          ? "rgba(255,255,255,0.08)"
-          : "rgba(255,255,255,0)",
-        backdropFilter: isScrolled
-          ? "blur(20px)"
-          : "blur(0px)",
+        paddingTop: isScrolled ? "12px" : "16px",
+        paddingBottom: isScrolled ? "12px" : "16px",
         duration: 0.5,
         ease: "power3.out",
       });
@@ -74,16 +67,17 @@ export default function Header() {
         w-full
         -translate-x-1/2
         border
-        border-transparent
-        bg-[#050505]/95
+        border-white/10
+        bg-white/[0.04]
         px-6
         py-4
         text-white
+        shadow-[0_10px_40px_rgba(0,0,0,0.25)]
+        backdrop-blur-xl
         md:px-12
       "
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between">
-        {/* Logo */}
         <button
           onClick={() => scrollToSection("#hero")}
           className="font-heading text-xl font-black"
@@ -91,47 +85,21 @@ export default function Header() {
           MZ<span className="text-[#4DA3FF]">.</span>
         </button>
 
-        {/* Navigation */}
         <nav className="flex items-center gap-4 md:gap-8">
           {links.map((link) => (
             <button
               key={link.href}
               onClick={() => scrollToSection(link.href)}
-              className="
-                text-xs
-                uppercase
-                tracking-[0.25em]
-                text-white/60
-                transition-colors
-                duration-300
-                hover:text-[#4DA3FF]
-              "
+              className="text-xs uppercase tracking-[0.25em] text-white/60 hover:text-[#4DA3FF]"
             >
               {link.label}
             </button>
           ))}
         </nav>
 
-        {/* CTA */}
         <button
           onClick={() => scrollToSection("#contact")}
-          className="
-            hidden
-            rounded-full
-            border
-            border-[#4DA3FF]/40
-            px-5
-            py-2
-            text-xs
-            uppercase
-            tracking-[0.2em]
-            text-[#4DA3FF]
-            transition-all
-            duration-300
-            hover:bg-[#4DA3FF]
-            hover:text-black
-            md:block
-          "
+          className="hidden rounded-full border border-[#4DA3FF]/40 px-5 py-2 text-xs uppercase tracking-[0.2em] text-[#4DA3FF] hover:bg-[#4DA3FF] hover:text-black md:block"
         >
           Let's Talk
         </button>
