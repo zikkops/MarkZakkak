@@ -271,7 +271,7 @@ export default function BillboardSection() {
           </h2>
 
           <p className="mt-6 max-w-md text-lg leading-relaxed text-white/65">
-            Immersive digital experiences with glowing motion and futuristic UI.
+            A cyberpunk-inspired interface — layered glow, kinetic type, and a UI built for atmosphere.
           </p>
         </div>
 

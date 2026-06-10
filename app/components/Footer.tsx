@@ -21,8 +21,7 @@ export default function Footer() {
             </h2>
 
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/50">
-              Front-end developer crafting interactive experiences with
-              Next.js, GSAP and creative motion design.
+              Building the web one frame at a time — with Next.js, GSAP, and a soft spot for smooth motion.
             </p>
           </div>
 

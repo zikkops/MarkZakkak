@@ -121,7 +121,7 @@ export default function Hero() {
       <div className="relative z-10 flex min-h-screen items-center">
         <div>
           <p className="hero-label mb-6 text-sm uppercase tracking-[0.35em] text-[#4DA3FF]">
-            Front-End Developer / GSAP Animations
+            Front-End Developer — Motion & Interaction
           </p>
 
           <h1 className="hero-title font-heading text-6xl font-black leading-[0.9] md:text-8xl lg:text-[9rem]">
@@ -137,8 +137,7 @@ export default function Hero() {
           </div>
 
           <p className="hero-description mt-6 max-w-2xl text-lg leading-relaxed text-white/60 md:text-xl">
-            I create interactive websites with clean interfaces, smooth
-            animations, and motion-driven user experiences.
+            I build websites that move with purpose — clean interfaces, precise animations, and interactions people actually notice.
           </p>
 
           <div className="hero-buttons mt-10 flex flex-col gap-4 sm:flex-row">

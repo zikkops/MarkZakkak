@@ -20,7 +20,8 @@ export default function ContactSection() {
       const card = cardRef.current;
 
       if (!section || !glow || !card) return;
-            gsap.to(section, {
+
+      gsap.to(section, {
         scale: 0.94,
         borderRadius: "42px",
         width: "92%",
@@ -28,12 +29,12 @@ export default function ContactSection() {
         marginRight: "4%",
         ease: "none",
         scrollTrigger: {
-            trigger: section,
-            start: "bottom bottom",
-            end: "+=500",
-            scrub: 1,
+          trigger: section,
+          start: "bottom bottom",
+          end: "+=500",
+          scrub: 1,
         },
-        });
+      });
 
       const moveGlowX = gsap.quickTo(glow, "x", {
         duration: 0.5,
@@ -57,7 +58,6 @@ export default function ContactSection() {
 
       const handleMouseMove = (e: MouseEvent) => {
         const rect = section.getBoundingClientRect();
-
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
@@ -76,12 +76,17 @@ export default function ContactSection() {
       section.addEventListener("mousemove", handleMouseMove);
       section.addEventListener("mouseleave", handleMouseLeave);
 
+      // Entrance: letters rise from below, starting thin and small
       gsap.from(".contact-letter", {
-        y: 120,
+        y: 80,
+        scaleY: 0.4,
+        scaleX: 0.75,
         opacity: 0,
+        fontWeight: 300,
         duration: 0.8,
         stagger: 0.025,
         ease: "power4.out",
+        transformOrigin: "bottom center",
       });
 
       gsap.from(".contact-card", {
@@ -101,7 +106,6 @@ export default function ContactSection() {
         ease: "power3.out",
       });
 
-
       const letters = gsap.utils.toArray<HTMLElement>(".contact-letter");
 
       letters.forEach((letter, hoveredIndex) => {
@@ -109,38 +113,40 @@ export default function ContactSection() {
           letters.forEach((target, index) => {
             const distance = Math.abs(index - hoveredIndex);
 
-            let weight = 300;
-            let scale = 1;
+            // Default (far away): matches the resting thin state
+            let fontWeight = 300;
+            let scaleY = 0.72;
             let opacity = 0.35;
             let y = 0;
 
             if (distance === 0) {
-              weight = 900;
-              scale = 1.3;
+              fontWeight = 900;
+              scaleY = 1.18;
               opacity = 1;
-              y = -6;
+              y = -5;
             } else if (distance === 1) {
-              weight = 750;
-              scale = 1.16;
+              fontWeight = 700;
+              scaleY = 1.08;
               opacity = 0.85;
-              y = -3;
+              y = -2;
             } else if (distance === 2) {
-              weight = 550;
-              scale = 1.08;
+              fontWeight = 500;
+              scaleY = 0.98;
               opacity = 0.65;
             } else if (distance === 3) {
-              weight = 400;
-              scale = 1.03;
+              fontWeight = 400;
+              scaleY = 0.88;
               opacity = 0.5;
             }
 
             gsap.to(target, {
-              fontWeight: weight,
-              scale,
+              fontWeight,
+              scaleY,
               opacity,
               y,
               duration: 0.25,
               ease: "power2.out",
+              transformOrigin: "bottom center",
             });
           });
         });
@@ -148,15 +154,17 @@ export default function ContactSection() {
 
       const title = section.querySelector(".contact-title");
 
+      // Reset back to the thin resting state (not bold)
       const resetLetters = () => {
         gsap.to(".contact-letter", {
-          fontWeight: 900,
-          scale: 1,
+          fontWeight: 300,
+          scaleY: 1,
           opacity: 1,
           y: 0,
           duration: 0.35,
           ease: "power2.out",
           stagger: 0.01,
+          transformOrigin: "bottom center",
         });
       };
 
@@ -170,6 +178,9 @@ export default function ContactSection() {
     },
     { scope: sectionRef }
   );
+
+  // Text split into 4 lines — spaces render as &nbsp; to preserve inline-block layout
+  const lines = ["Let's Build", "Something", "Worth", "Remembering."];
 
   return (
     <section
@@ -190,13 +201,14 @@ export default function ContactSection() {
             Contact
           </p>
 
-          <h2 className="contact-title font-heading text-6xl font-black leading-[0.9] md:text-8xl">
-            {["Let's Build", "Something."].map((line, lineIndex) => (
+          <h2 className="contact-title font-heading text-6xl leading-[0.9] md:text-8xl" style={{ fontWeight: 300 }}>
+            {lines.map((line, lineIndex) => (
               <span key={lineIndex} className="block">
                 {line.split("").map((char, charIndex) => (
                   <span
                     key={`${lineIndex}-${charIndex}`}
                     className="contact-letter inline-block cursor-default"
+                    style={{ transformOrigin: "bottom center", fontWeight: 300 }}
                   >
                     {char === " " ? "\u00A0" : char}
                   </span>
@@ -206,8 +218,7 @@ export default function ContactSection() {
           </h2>
 
           <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/60">
-            Got a website, animation idea, or interactive experience in mind?
-            Send me a message and let’s turn it into something memorable.
+            Got a project in mind — or just an idea you haven't figured out yet? Tell me about it.
           </p>
         </div>
 
@@ -216,8 +227,6 @@ export default function ContactSection() {
           className="contact-card relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 backdrop-blur-xl md:p-8"
           style={{ transformStyle: "preserve-3d" }}
         >
-          
-
           <div className="contact-field mb-5">
             <label className="mb-2 block text-sm text-white/50">Name</label>
             <input

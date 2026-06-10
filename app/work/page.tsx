@@ -18,15 +18,11 @@ export default function WorkPage() {
           </p>
 
           <h1 className="font-heading text-6xl font-black leading-[0.9] md:text-8xl">
-            Projects
-            <br />
-            in Motion.
+            Work Worth <br />Watching.
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-white/60 md:text-xl">
-            A collection of websites, interfaces, motion experiments, and
-            scroll-driven portfolio experiences built with modern frontend
-            tools.
+            Landing pages, WordPress builds, React apps, and GSAP experiences — made to perform and built to impress.
           </p>
         </div>
       </section>

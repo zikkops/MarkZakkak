@@ -18,14 +18,11 @@ export default function LabPage() {
           </p>
 
           <h1 className="font-heading text-6xl font-black leading-[0.9] md:text-8xl">
-            Motion
-            <br />
-            Experiments.
+            Where Ideas<br/> Get Weird.
           </h1>
 
           <p className="mt-8 max-w-2xl text-lg leading-relaxed text-white/60 md:text-xl">
-            A playground for GSAP, ScrollTrigger, Lottie, Spline, cursor
-            interactions, pinned scenes, and experimental interface motion.
+            ScrollTrigger scenes, cursor effects, Lottie experiments, Spline embeds — the lab is where concepts become interactions.
           </p>
         </div>
       </section>

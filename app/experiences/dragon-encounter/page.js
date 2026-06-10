@@ -24,8 +24,7 @@ export default function DragonEncounterPage() {
           </h1>
 
           <p className="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-white/60 md:text-xl">
-            A cinematic scroll-driven encounter built with Next.js, GSAP,
-            ScrollTrigger, video, character callouts, and boss-reveal motion.
+            A scroll-driven cinematic built entirely in GSAP — video, boss reveal, and storytelling woven into one unforgettable page.
           </p>
 
           <a
