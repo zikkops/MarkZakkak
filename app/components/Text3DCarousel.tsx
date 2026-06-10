@@ -1,254 +1,291 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 
+// Audio: Internet Archive open CORS direct MP3 links (Access-Control-Allow-Origin: *)
 const slides = [
   {
     title: "Motion Portfolio",
     desc: "A cinematic developer portfolio built with Next.js and GSAP.",
     tags: ["Next.js", "GSAP", "UI"],
-    image:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop",
     bg: "#07111f",
     glow: "#4DA3FF",
+    genre: "Ambient Electronic",
+    artist: "Kai Engel",
+    audio: "/audio/nastelbom-electronic-electronic-bass-435079.mp3",
   },
   {
     title: "Creative Studio",
     desc: "A bold landing page concept for a digital creative agency.",
     tags: ["Branding", "Motion", "Frontend"],
-    image:
-      "https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1518005020951-eccb494ad742?q=80&w=800&auto=format&fit=crop",
     bg: "#1c0f03",
     glow: "#F97316",
+    genre: "Indie Folk",
+    artist: "Podington Bear",
+    audio: "/audio/alexgrohl-indie-folk-15044.mp3",
   },
   {
     title: "E-Commerce Flow",
     desc: "A polished shopping experience with smooth interactions.",
     tags: ["Shop", "UX", "React"],
-    image:
-      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=800&auto=format&fit=crop",
     bg: "#052e16",
     glow: "#22C55E",
+    genre: "Lo-Fi Chill",
+    artist: "Broke For Free",
+    audio: "/audio/fassounds-good-night-lofi-cozy-chill-music-160166.mp3",
   },
   {
     title: "D&D Encounter",
     desc: "A scroll-driven cinematic scene with video and character UI.",
     tags: ["GSAP", "Video", "Scroll"],
-    image:
-      "https://images.unsplash.com/photo-1601987077677-5346c0c57d3f?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1601987077677-5346c0c57d3f?q=80&w=800&auto=format&fit=crop",
     bg: "#450a0a",
     glow: "#EF4444",
+    genre: "Epic Cinematic",
+    artist: "Kai Engel",
+    audio: "/audio/paulyudin-epic-cinematic-epic-482367.mp3",
   },
   {
     title: "Airport Experience",
     desc: "A premium landing page with refined interface motion.",
     tags: ["Landing", "GSAP", "Design"],
-    image:
-      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=800&auto=format&fit=crop",
     bg: "#2e1065",
     glow: "#A855F7",
+    genre: "Smooth Jazz",
+    artist: "Rolemusic",
+    audio: "/audio/atlasaudio-jazz-519632.mp3",
   },
   {
     title: "Interactive Lab",
     desc: "Experimental frontend interactions and scroll-based animations.",
     tags: ["Lab", "Motion", "Creative"],
-    image:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
     bg: "#083344",
     glow: "#00E5FF",
+    genre: "Synthwave",
+    artist: "Broke For Free",
+    audio: "/audio/the_mountain-midnight-synthwave-317752.mp3",
   },
 ];
 
+const VINYL_BG = `radial-gradient(circle at center,#1a1a1a 0 20%,transparent 21%),
+  repeating-radial-gradient(circle at center,transparent 0,transparent 4px,rgba(255,255,255,0.025) 4px,rgba(255,255,255,0.025) 5px),
+  #0d0d0d`;
+
+const MINI_VINYL_BG = `radial-gradient(circle at center,#222 0 25%,transparent 26%),
+  repeating-radial-gradient(circle at center,transparent 0,transparent 3px,rgba(255,255,255,0.04) 3px,rgba(255,255,255,0.04) 4px),
+  #111`;
+
 export default function Text3DCarousel() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const glowRef = useRef<HTMLDivElement | null>(null);
-  const recordRef = useRef<HTMLDivElement | null>(null);
-  const infoRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef    = useRef<HTMLElement | null>(null);
+  const glowRef       = useRef<HTMLDivElement | null>(null);
+  const recordRef     = useRef<HTMLDivElement | null>(null);
+  const infoRef       = useRef<HTMLDivElement | null>(null);
   const imgCurrentRef = useRef<HTMLDivElement | null>(null);
-  const imgNextRef = useRef<HTMLDivElement | null>(null);
+  const imgNextRef    = useRef<HTMLDivElement | null>(null);
+  const needleRef     = useRef<HTMLDivElement | null>(null);
+  const progressRef   = useRef<HTMLDivElement | null>(null);
+  const timeRef       = useRef<HTMLSpanElement | null>(null);
+  const dropZoneRef   = useRef<HTMLDivElement | null>(null);
 
-  const idxRef = useRef(0);
-  const busyRef = useRef(false);
-  const rotRef = useRef(0);
-  const idleSpinRef = useRef<(() => void) | null>(null);
+  const audioRef      = useRef<HTMLAudioElement | null>(null);
+  const [playing, setPlaying]         = useState(false);
+  const [volume, setVolume]           = useState(0.7);
+  const [muted, setMuted]             = useState(false);
+  const [idx, setIdx]                 = useState(0);
+  const [dragOverMain, setDragOverMain] = useState(false);
+  const [miniRots, setMiniRots]       = useState<number[]>(slides.map((_, i) => i * 22));
 
-  const [idx, setIdx] = useState(0);
+  const idxRef   = useRef(0);
+  const busyRef  = useRef(false);
+  const rotRef   = useRef(0);
+  const rafRef   = useRef<number>(0);
 
+  // Mini vinyl idle spin
+  const miniRotsRef = useRef<number[]>(slides.map((_, i) => i * 22));
+  const miniRefsArr = useRef<(HTMLDivElement | null)[]>([]);
+
+  const fmt = (s: number) => {
+    if (!isFinite(s)) return "0:00";
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  // ── Load audio ──────────────────────────────────────────────────────────
+  const loadAudio = useCallback((slideIndex: number, autoplay: boolean) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.src = slides[slideIndex].audio;
+    audio.volume = volume;
+    audio.muted = muted;
+    audio.load();
+    if (autoplay) {
+      const playPromise = audio.play();
+      if (playPromise) playPromise.catch(() => {});
+      setPlaying(true);
+    } else {
+      setPlaying(false);
+    }
+  }, [volume, muted]);
+
+  // ── RAF loop: spin main record + mini vinyls ───────────────────────────
   useEffect(() => {
-    const section = sectionRef.current;
-    const glow = glowRef.current;
-    const record = recordRef.current;
-    const imgCurrent = imgCurrentRef.current;
-    const imgNext = imgNextRef.current;
+    const tick = () => {
+      // Always read audioRef.current fresh — avoids stale closure over null
+      const audio = audioRef.current;
+      const isPlaying = audio && !audio.paused && audio.readyState >= 2;
 
-    if (!section || !glow || !record || !imgCurrent || !imgNext) return;
+      // Main record spins when playing
+      if (isPlaying) {
+        rotRef.current += 1.8;
+        if (recordRef.current) gsap.set(recordRef.current, { rotation: rotRef.current });
 
-    gsap.set(section, { background: slides[0].bg });
-    gsap.set(glow, { backgroundColor: slides[0].glow });
-    gsap.set(record, { rotation: rotRef.current });
+        if (progressRef.current && audio.duration) {
+          progressRef.current.style.width = `${(audio.currentTime / audio.duration) * 100}%`;
+        }
+        if (timeRef.current && audio.duration) {
+          timeRef.current.textContent = `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
+        }
+      }
 
-    gsap.set(imgCurrent, {
-      backgroundImage: `url(${slides[0].image})`,
-      x: 0,
-      opacity: 1,
-    });
+      // Mini vinyls always spin slowly (active one matches main speed while playing)
+      miniRefsArr.current.forEach((el, i) => {
+        if (!el) return;
+        if (i === idxRef.current && isPlaying) {
+          miniRotsRef.current[i] += 1.8;
+        } else {
+          miniRotsRef.current[i] += 0.3;
+        }
+        gsap.set(el, { rotation: miniRotsRef.current[i] });
+      });
 
-    gsap.set(imgNext, {
-      backgroundImage: `url(${slides[1].image})`,
-      x: 110,
-      opacity: 0,
-    });
-
-    const idleSpin = () => {
-      rotRef.current += 0.25;
-      gsap.set(record, { rotation: rotRef.current });
+      rafRef.current = requestAnimationFrame(tick);
     };
-
-    idleSpinRef.current = idleSpin;
-    gsap.ticker.add(idleSpin);
-
-    return () => {
-      gsap.ticker.remove(idleSpin);
-    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const stopIdle = () => {
-    if (idleSpinRef.current) {
-      gsap.ticker.remove(idleSpinRef.current);
-    }
-  };
+  // ── Initial setup ───────────────────────────────────────────────────────
+  useEffect(() => {
+    const section = sectionRef.current;
+    const glow    = glowRef.current;
+    const imgC    = imgCurrentRef.current;
+    const imgN    = imgNextRef.current;
+    if (!section || !glow || !imgC || !imgN) return;
 
-  const startIdle = () => {
-    if (idleSpinRef.current) {
-      gsap.ticker.remove(idleSpinRef.current);
-      gsap.ticker.add(idleSpinRef.current);
-    }
-  };
+    gsap.set(section, { background: slides[0].bg });
+    gsap.set(glow,    { backgroundColor: slides[0].glow });
+    gsap.set(imgC,    { backgroundImage: `url(${slides[0].image})`, x: 0, opacity: 1 });
+    gsap.set(imgN,    { backgroundImage: `url(${slides[1].image})`, x: 110, opacity: 0 });
 
-  const goTo = (to: number, dir: 1 | -1) => {
+    const audio = new Audio();
+    audio.preload = "metadata";
+    audioRef.current = audio;
+    return () => { audio.pause(); audio.src = ""; };
+  }, []);
+
+  // ── Slide transition ────────────────────────────────────────────────────
+  const goTo = useCallback((to: number, dir: 1 | -1, autoplay = true) => {
     if (busyRef.current || to === idxRef.current) return;
 
     const section = sectionRef.current;
-    const glow = glowRef.current;
-    const record = recordRef.current;
-    const info = infoRef.current;
-    const imgCurrent = imgCurrentRef.current;
-    const imgNext = imgNextRef.current;
-
-    if (!section || !glow || !record || !info || !imgCurrent || !imgNext) {
-      return;
-    }
+    const glow    = glowRef.current;
+    const info    = infoRef.current;
+    const imgC    = imgCurrentRef.current;
+    const imgN    = imgNextRef.current;
+    const needle  = needleRef.current;
+    if (!section || !glow || !info || !imgC || !imgN) return;
 
     busyRef.current = true;
-    stopIdle();
+    const next = slides[to];
 
-    const nextSlide = slides[to];
+    // Audio switches immediately — doesn't wait for the animation to finish
+    loadAudio(to, autoplay);
 
-    gsap.set(imgNext, {
-      backgroundImage: `url(${nextSlide.image})`,
-      x: dir === 1 ? 110 : -110,
-      opacity: 1,
+    if (needle) {
+      gsap.to(needle, { rotation: -22, duration: 0.28, ease: "power2.out", transformOrigin: "top right" });
+      setTimeout(() => gsap.to(needle, { rotation: 0, duration: 0.4, ease: "power2.inOut", transformOrigin: "top right" }), 650);
+    }
+
+    gsap.set(imgN, { backgroundImage: `url(${next.image})`, x: dir === 1 ? 110 : -110, opacity: 1 });
+
+    // Spin burst
+    const burst = gsap.to({}, {
+      duration: 0.65, ease: "power3.inOut",
+      onUpdate() { rotRef.current += 7; if (recordRef.current) gsap.set(recordRef.current, { rotation: rotRef.current }); },
     });
 
-    const fastSpin = gsap.to(
-      {},
-      {
-        duration: 0.7,
-        ease: "power3.inOut",
-        onUpdate: () => {
-          rotRef.current += 6;
-          gsap.set(record, { rotation: rotRef.current });
-        },
-      }
-    );
-
     const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.set(imgCurrent, {
-          backgroundImage: `url(${nextSlide.image})`,
-          x: 0,
-          opacity: 1,
-        });
-
-        gsap.set(imgNext, {
-          x: dir === 1 ? 110 : -110,
-          opacity: 0,
-        });
-
-        idxRef.current = to;
-        setIdx(to);
+      onComplete() {
+        gsap.set(imgC, { backgroundImage: `url(${next.image})`, x: 0, opacity: 1 });
+        gsap.set(imgN, { x: dir === 1 ? 110 : -110, opacity: 0 });
         busyRef.current = false;
-        fastSpin.kill();
-        startIdle();
+        burst.kill();
       },
     });
 
-    tl.to(info, {
-      opacity: 0,
-      y: -10,
-      duration: 0.3,
-      ease: "power2.inOut",
-    })
-      .to(
-        section,
-        {
-          background: nextSlide.bg,
-          duration: 0.8,
-          ease: "power2.inOut",
-        },
-        0
-      )
-      .to(
-        glow,
-        {
-          backgroundColor: nextSlide.glow,
-          duration: 0.8,
-          ease: "power2.inOut",
-        },
-        0
-      )
-      .to(
-        imgCurrent,
-        {
-          x: dir === 1 ? -110 : 110,
-          duration: 0.45,
-          ease: "power2.inOut",
-        },
-        0
-      )
-      .to(
-        imgNext,
-        {
-          x: 0,
-          duration: 0.45,
-          ease: "power2.inOut",
-        },
-        0
-      )
-      .add(() => {
-        setIdx(to);
-      })
-      .fromTo(
-        info,
-        { opacity: 0, y: 10 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.3,
-          ease: "power2.inOut",
-        }
-      );
+    tl.to(info, { opacity: 0, y: -8, duration: 0.22, ease: "power2.inOut" })
+      .add(() => { idxRef.current = to; setIdx(to); })
+      .to(section, { background: next.bg, duration: 0.75, ease: "power2.inOut" }, 0)
+      .to(glow,    { backgroundColor: next.glow, duration: 0.75, ease: "power2.inOut" }, 0)
+      .to(imgC,    { x: dir === 1 ? -110 : 110, duration: 0.38, ease: "power2.inOut" }, 0)
+      .to(imgN,    { x: 0, duration: 0.38, ease: "power2.inOut" }, 0)
+      .fromTo(info, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.28, ease: "power2.out" });
+  }, [loadAudio]);
+
+  // ── Play/pause ──────────────────────────────────────────────────────────
+  const togglePlay = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audio.src || audio.src === window.location.href) {
+      loadAudio(idxRef.current, true);
+      return;
+    }
+    if (audio.paused) { audio.play().catch(() => {}); setPlaying(true); }
+    else              { audio.pause(); setPlaying(false); }
   };
 
-  const next = () => {
-    const to = (idxRef.current + 1) % slides.length;
-    goTo(to, 1);
+  const toggleMute = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.muted = !audio.muted;
+    setMuted(audio.muted);
   };
 
-  const prev = () => {
-    const to = (idxRef.current - 1 + slides.length) % slides.length;
-    goTo(to, -1);
+  const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseFloat(e.target.value);
+    setVolume(v);
+    if (audioRef.current) audioRef.current.volume = v;
+  };
+
+  // ── Drag-and-drop: mini vinyl onto main ─────────────────────────────────
+  const handleMiniDragStart = (e: React.DragEvent, slideIndex: number) => {
+    e.dataTransfer.setData("slideIndex", String(slideIndex));
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleMainDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverMain(true);
+  };
+
+  const handleMainDragLeave = () => setDragOverMain(false);
+
+  const handleMainDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOverMain(false);
+    const to = parseInt(e.dataTransfer.getData("slideIndex"), 10);
+    if (isNaN(to) || to === idxRef.current) return;
+    const dir = to > idxRef.current ? 1 : -1;
+    goTo(to, dir as 1 | -1, true);
   };
 
   const slide = slides[idx];
@@ -256,94 +293,269 @@ export default function Text3DCarousel() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-[500px] overflow-hidden px-6 py-16 text-white md:px-12"
+      className="relative h-screen overflow-hidden px-6 py-10 text-white md:px-12"
     >
+      {/* Grid texture */}
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:60px_60px]" />
+
+      {/* Ambient glow */}
       <div
         ref={glowRef}
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[400px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.15] blur-[80px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.18] blur-[110px]"
       />
 
-      <div className="relative z-10 grid min-h-[500px] items-center gap-10 md:grid-cols-[1fr_auto_1fr]">
-        <div ref={infoRef} className="max-w-md">
-          <p className="mb-4 text-sm uppercase tracking-[0.35em] text-white/50">
-            {String(idx + 1).padStart(2, "0")} /{" "}
-            {String(slides.length).padStart(2, "0")}
-          </p>
+      <div className="relative z-10 grid h-full grid-cols-[1fr_auto_1fr] items-center gap-8">
 
-          <h2 className="font-heading text-4xl font-black md:text-6xl">
+        {/* ── LEFT: slide info ── */}
+        <div ref={infoRef} className="max-w-sm">
+          <p className="mb-3 text-xs uppercase tracking-[0.4em] text-white/35">
+            {String(idx + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+          </p>
+          <h2 className="font-heading text-4xl font-black leading-tight md:text-5xl">
             {slide.title}
           </h2>
-
-          <p className="mt-5 text-base leading-relaxed text-white/65 md:text-lg">
+          <p className="mt-3 text-sm leading-relaxed text-white/55 md:text-base">
             {slide.desc}
           </p>
-
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-4 flex flex-wrap gap-2">
             {slide.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm text-white/70"
-              >
+              <span key={tag} className="rounded-full border border-white/15 bg-white/[0.05] px-3 py-1 text-xs text-white/65">
                 {tag}
               </span>
             ))}
           </div>
+
+          {/* Now playing badge */}
+          <div className="mt-6 flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-widest text-white/25">Now playing</span>
+            <span
+              className="rounded-full px-3 py-1 text-[11px] font-semibold"
+              style={{ background: `${slide.glow}22`, color: slide.glow, border: `1px solid ${slide.glow}44` }}
+            >
+              {slide.genre}
+            </span>
+          </div>
+          <p className="mt-1 text-[11px] text-white/30">{slide.artist}</p>
         </div>
 
-        <div
-          ref={recordRef}
-          className="relative mx-auto h-[220px] w-[220px] rounded-full bg-[#111] shadow-[0_0_80px_rgba(0,0,0,0.75)] sm:h-[260px] sm:w-[260px]"
-          style={{
-            background:
-              "radial-gradient(circle at center, #171717 0 22%, transparent 23%), radial-gradient(circle at center, transparent 0 35%, rgba(255,255,255,.05) 36%, transparent 37%), radial-gradient(circle at center, transparent 0 52%, rgba(255,255,255,.04) 53%, transparent 54%), radial-gradient(circle at center, transparent 0 70%, rgba(255,255,255,.035) 71%, transparent 72%), #111",
-          }}
-        >
-          <div className="absolute left-1/2 top-1/2 h-[108px] w-[108px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full">
+        {/* ── CENTER: main vinyl + controls ── */}
+        <div className="flex flex-col items-center gap-5">
+
+          {/* Vinyl + needle */}
+          <div className="relative">
+            {/* Needle arm */}
             <div
-              ref={imgCurrentRef}
-              className="absolute inset-0 rounded-full bg-cover bg-center"
+              ref={needleRef}
+              className="absolute -right-5 -top-3 z-20 origin-top-right"
+              style={{
+                width: "5px",
+                height: "72px",
+                background: "linear-gradient(to bottom,rgba(255,255,255,0.45),rgba(255,255,255,0.08))",
+                borderRadius: "3px",
+                boxShadow: "0 0 6px rgba(255,255,255,0.1)",
+              }}
             />
 
+            {/* Drop zone glow ring */}
             <div
-              ref={imgNextRef}
-              className="absolute inset-0 rounded-full bg-cover bg-center"
+              ref={dropZoneRef}
+              className="absolute inset-0 rounded-full transition-all duration-200"
+              style={{
+                boxShadow: dragOverMain
+                  ? `0 0 0 4px ${slide.glow}, 0 0 40px ${slide.glow}66`
+                  : "none",
+                pointerEvents: "none",
+              }}
             />
+
+            {/* Main vinyl disc */}
+            <div
+              ref={recordRef}
+              className="relative select-none"
+              style={{
+                width: "260px",
+                height: "260px",
+                borderRadius: "50%",
+                background: VINYL_BG,
+                boxShadow: "0 0 60px rgba(0,0,0,0.85), inset 0 0 24px rgba(0,0,0,0.6)",
+                cursor: "default",
+              }}
+              onDragOver={handleMainDragOver}
+              onDragLeave={handleMainDragLeave}
+              onDrop={handleMainDrop}
+            >
+              {/* Groove rings */}
+              {[38, 58, 78, 98, 110].map((r) => (
+                <div key={r} className="pointer-events-none absolute rounded-full border border-white/[0.04]" style={{ inset: `${r}px` }} />
+              ))}
+
+              {/* Center label with album art */}
+              <div
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full"
+                style={{ width: "100px", height: "100px" }}
+              >
+                <div ref={imgCurrentRef} className="absolute inset-0 rounded-full bg-cover bg-center" />
+                <div ref={imgNextRef}    className="absolute inset-0 rounded-full bg-cover bg-center" />
+                <div className="absolute left-1/2 top-1/2 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black" />
+              </div>
+
+              {/* Drop hint */}
+              {dragOverMain && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full">
+                  <span className="text-[11px] uppercase tracking-widest" style={{ color: slide.glow }}>
+                    drop to play
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="absolute left-1/2 top-1/2 z-20 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black" />
+          {/* ── Audio controls ── */}
+          <div className="w-[260px] space-y-2">
+            {/* Progress bar */}
+            <div
+              className="relative h-[3px] w-full cursor-pointer overflow-hidden rounded-full bg-white/10"
+              onClick={(e) => {
+                const audio = audioRef.current;
+                if (!audio?.duration) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
+              }}
+            >
+              <div ref={progressRef} className="h-full rounded-full" style={{ width: "0%", background: slide.glow, transition: "none" }} />
+            </div>
+
+            <div className="flex justify-between text-[10px] text-white/25">
+              <span ref={timeRef}>0:00 / 0:00</span>
+              <span>{slide.genre}</span>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex items-center justify-between pt-1">
+              <button onClick={() => goTo((idxRef.current - 1 + slides.length) % slides.length, -1)}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs text-white/50 transition hover:text-white">
+                ⏮
+              </button>
+
+              <button onClick={togglePlay}
+                className="flex h-11 w-11 items-center justify-center rounded-full border text-base font-bold text-white transition"
+                style={{ background: `${slide.glow}2a`, borderColor: `${slide.glow}55` }}>
+                {playing ? "⏸" : "▶"}
+              </button>
+
+              <button onClick={() => goTo((idxRef.current + 1) % slides.length, 1)}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs text-white/50 transition hover:text-white">
+                ⏭
+              </button>
+
+              <button onClick={toggleMute}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/5 text-xs text-white/50 transition hover:text-white">
+                {muted ? "🔇" : "🔊"}
+              </button>
+
+              <input
+                type="range" min={0} max={1} step={0.05} value={volume}
+                onChange={handleVolume}
+                className="h-1 w-14 cursor-pointer accent-white"
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center justify-start gap-4 md:justify-end">
-          <button
-            onClick={prev}
-            className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/30 bg-white/10 text-white"
-          >
-            ←
-          </button>
+        {/* ── RIGHT: mini vinyl queue ── */}
+        <div className="flex h-full w-[260px] justify-self-end flex-col justify-center gap-1 overflow-y-auto py-4">
+          <p className="mb-3 text-[10px] uppercase tracking-[0.3em] text-white/25">
+            Queue — drag to play
+          </p>
 
-          <button
-            onClick={next}
-            className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-white/30 bg-white/10 text-white"
-          >
-            →
-          </button>
+          {slides.map((s, i) => {
+            const isActive = i === idx;
+            return (
+              <div
+                key={i}
+                draggable={!isActive}
+                onDragStart={(e) => handleMiniDragStart(e, i)}
+                className="group flex cursor-grab items-center gap-3 rounded-2xl border px-3 py-2.5 transition-all duration-200 active:cursor-grabbing"
+                style={{
+                  border: isActive ? `1px solid ${s.glow}55` : "1px solid rgba(255,255,255,0.06)",
+                  background: isActive ? `${s.glow}12` : "rgba(255,255,255,0.03)",
+                  opacity: isActive ? 1 : 0.7,
+                }}
+                onClick={() => {
+                  if (!isActive) goTo(i, i > idxRef.current ? 1 : -1, true);
+                }}
+              >
+                {/* Mini vinyl disc */}
+                <div
+                  ref={(el) => { miniRefsArr.current[i] = el; }}
+                  className="relative flex-shrink-0"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    background: MINI_VINYL_BG,
+                    boxShadow: isActive ? `0 0 12px ${s.glow}66` : "none",
+                  }}
+                >
+                  {/* Mini center label */}
+                  <div
+                    className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-cover bg-center"
+                    style={{
+                      width: "18px",
+                      height: "18px",
+                      backgroundImage: `url(${s.image})`,
+                    }}
+                  />
+                  <div className="absolute left-1/2 top-1/2 z-10 h-[5px] w-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-black" />
+                  {/* Active indicator ring */}
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-full" style={{ boxShadow: `0 0 0 2px ${s.glow}` }} />
+                  )}
+                </div>
+
+                {/* Track info */}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[12px] font-semibold leading-tight" style={{ color: isActive ? s.glow : "rgba(255,255,255,0.8)" }}>
+                    {s.title}
+                  </p>
+                  <p className="truncate text-[10px] text-white/35">{s.genre}</p>
+                </div>
+
+                {/* Drag handle hint */}
+                {!isActive && (
+                  <div className="flex-shrink-0 text-[10px] text-white/20 opacity-0 transition-opacity group-hover:opacity-100">
+                    ⠿
+                  </div>
+                )}
+
+                {/* Playing indicator */}
+                {isActive && playing && (
+                  <div className="flex flex-shrink-0 items-end gap-[2px]" style={{ height: "14px" }}>
+                    {[1, 2, 3].map((b) => (
+                      <div
+                        key={b}
+                        className="w-[3px] rounded-full"
+                        style={{
+                          background: s.glow,
+                          animation: `bounce${b} 0.6s ease-in-out infinite alternate`,
+                          height: `${6 + b * 3}px`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-3">
-        {slides.map((_, dotIndex) => (
-          <button
-            key={dotIndex}
-            onClick={() => {
-              const dir = dotIndex > idxRef.current ? 1 : -1;
-              goTo(dotIndex, dir);
-            }}
-            className={`h-2 w-2 rounded-full ${
-              dotIndex === idx ? "scale-125 bg-white" : "bg-white/30"
-            }`}
-          />
-        ))}
-      </div>
+      {/* Bounce keyframes for equalizer bars */}
+      <style>{`
+        @keyframes bounce1 { from { transform: scaleY(0.4); } to { transform: scaleY(1); } }
+        @keyframes bounce2 { from { transform: scaleY(0.7); } to { transform: scaleY(0.3); } }
+        @keyframes bounce3 { from { transform: scaleY(0.3); } to { transform: scaleY(0.9); } }
+      `}</style>
     </section>
   );
 }

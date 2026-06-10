@@ -112,12 +112,19 @@ export default function Hero() {
       ref={heroRef}
       className="relative min-h-screen overflow-hidden bg-[#050505] px-6 text-white md:px-12"
     >
-      <div className="absolute left-[-15%] top-[-20%] h-[600px] w-[600px] rounded-full bg-[#4DA3FF]/20 blur-[150px]" />
+      {/* Spline background */}
+        <div className="absolute inset-0 z-0 h-full w-full">
+          <iframe
+            src="https://my.spline.design/3ddesigntextcopycopy-fzGE4AyjaI6zVIhiHFnHYgzu-YkR/"
+            frameBorder="0"
+            style={{ width: "100%", height: "100%", display: "block", border: "none" }}
+          />
+        </div>
 
-      <div className="absolute right-[-12%] bottom-[-20%] h-[500px] w-[500px] rounded-full bg-[#00E5FF]/10 blur-[150px]" />
+      {/* Optional dark overlay to keep text readable */}
+      <div className="absolute inset-0 z-[1] bg-[#050505]/40" />
 
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
-
+      {/* Content */}
       <div className="relative z-10 flex min-h-screen items-center">
         <div>
           <p className="hero-label mb-6 text-sm uppercase tracking-[0.35em] text-[#4DA3FF]">
@@ -137,7 +144,8 @@ export default function Hero() {
           </div>
 
           <p className="hero-description mt-6 max-w-2xl text-lg leading-relaxed text-white/60 md:text-xl">
-            I build websites that move with purpose — clean interfaces, precise animations, and interactions people actually notice.
+            I build websites that move with purpose — clean interfaces, precise
+            animations, and interactions people actually notice.
           </p>
 
           <div className="hero-buttons mt-10 flex flex-col gap-4 sm:flex-row">
@@ -158,14 +166,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute right-8 top-1/2 z-0 hidden -translate-y-1/2 text-right font-heading text-[8rem] font-black leading-[0.85] tracking-tight text-white/[0.03] lg:block">
-        CREATIVE
-        <br />
-        FRONTEND
-        <br />
-        DEVELOPER
-      </div>
-
+      {/* Scroll indicator */}
       <div className="scroll-indicator absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center">
         <span className="mb-3 text-[10px] uppercase tracking-[0.35em] text-white/40">
           Scroll
