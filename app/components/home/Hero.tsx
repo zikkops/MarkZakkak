@@ -113,16 +113,21 @@ export default function Hero() {
       className="relative min-h-screen overflow-hidden bg-[#050505] px-6 text-white md:px-12"
     >
       {/* Spline background */}
-        <div className="absolute inset-0 z-0 h-full w-full">
-          <iframe
-            src="https://my.spline.design/3ddesigntextcopycopy-fzGE4AyjaI6zVIhiHFnHYgzu-YkR/"
-            frameBorder="0"
-            style={{ width: "100%", height: "100%", display: "block", border: "none" }}
-          />
-        </div>
+      <div className="absolute inset-0 z-0 h-full w-full">
+        <iframe
+          src="https://my.spline.design/3ddesigntextcopycopy-fzGE4AyjaI6zVIhiHFnHYgzu-YkR/"
+          frameBorder="0"
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "block",
+            border: "none",
+          }}
+        />
+      </div>
 
-      {/* Optional dark overlay to keep text readable */}
-      <div className="absolute inset-0 z-[1] bg-[#050505]/40" />
+      {/* Dark overlay — pointer-events-none so Spline stays fully interactive */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/40" />
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen items-center">
@@ -151,14 +156,14 @@ export default function Hero() {
           <div className="hero-buttons mt-10 flex flex-col gap-4 sm:flex-row">
             <Link
               href="/work"
-              className="rounded-full bg-[#4DA3FF] px-8 py-4 text-center font-medium text-black hover:bg-[#00E5FF]"
+              className="rounded-full bg-[#4DA3FF] px-8 py-4 text-center font-medium text-black hover:bg-[#00E5FF] transition-colors duration-200"
             >
               View Projects
             </Link>
 
             <Link
               href="/contact"
-              className="rounded-full border border-white/20 px-8 py-4 text-center font-medium text-white hover:border-[#4DA3FF] hover:text-[#4DA3FF]"
+              className="rounded-full border border-white/20 px-8 py-4 text-center font-medium text-white hover:border-[#4DA3FF] hover:text-[#4DA3FF] transition-colors duration-200"
             >
               Contact Me
             </Link>
