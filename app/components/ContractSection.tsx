@@ -191,19 +191,19 @@ export default function ContactSection() {
           </p>
 
           <h2 className="contact-title font-heading text-6xl font-black leading-[0.9] md:text-8xl">
-  {["Let's Build", "Something."].map((line, lineIndex) => (
-    <span key={lineIndex} className="block">
-      {line.split("").map((char, charIndex) => (
-        <span
-          key={`${lineIndex}-${charIndex}`}
-          className="contact-letter inline-block cursor-default"
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))}
-    </span>
-  ))}
-</h2>
+            {["Let's Build", "Something."].map((line, lineIndex) => (
+              <span key={lineIndex} className="block">
+                {line.split("").map((char, charIndex) => (
+                  <span
+                    key={`${lineIndex}-${charIndex}`}
+                    className="contact-letter inline-block cursor-default"
+                  >
+                    {char === " " ? "\u00A0" : char}
+                  </span>
+                ))}
+              </span>
+            ))}
+          </h2>
 
           <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/60">
             Got a website, animation idea, or interactive experience in mind?

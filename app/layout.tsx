@@ -1,31 +1,25 @@
-import type { Metadata } from "next";
-import { Orbitron, Inter } from "next/font/google";
 import "./globals.css";
+import type { ReactNode } from "react";
+import Header from "@/app/components/Header";
+import PageTransition from "@/app/components/PageTransition";
 
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-heading",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-body",
-});
-
-export const metadata: Metadata = {
-  title: "Mark Zakkak | Front-End Developer",
-  description: "Interactive front-end portfolio using GSAP and Next.js.",
+export const metadata = {
+  title: "Mark Zakkak",
+  description: "Frontend Developer • GSAP • Motion Design",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  children: ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className={`${orbitron.variable} ${inter.variable}`}>
-        {children}
+      <body className="bg-[#050505] text-white antialiased">
+        <PageTransition>
+          <Header />
+          {children}
+        </PageTransition>
       </body>
     </html>
   );

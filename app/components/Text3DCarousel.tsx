@@ -60,7 +60,7 @@ const slides = [
   },
 ];
 
-export default function RecordCarousel() {
+export default function Text3DCarousel() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const recordRef = useRef<HTMLDivElement | null>(null);

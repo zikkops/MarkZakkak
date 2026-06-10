@@ -66,7 +66,7 @@ const slides = [
   },
 ];
 
-export default function CyberBillboard() {
+export default function BillboardSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
   const imageWrapRef = useRef<HTMLDivElement | null>(null);

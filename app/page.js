@@ -1,39 +1,19 @@
-import Hero from "@/app/components/hero";
-import WorkSection from "@/app/components/WorkSection";
-import AnimationLab from "@/app/components/AnimationLab";
-import MarqueeBanner from "@/app/components/MarqueeBanner";
-import DndScene from "@/app/components/DndScene";
-import DangerBanner from "@/app/components/DangerBanner";
-import Text3DCarousel from "@/app/components/Text3DCarousel";
-import BillboardSection from "@/app/components/BillboardSection"
-import ContactSection from "@/app/components/ContractSection";
+import Hero from "@/app/components/home/Hero";
 import Footer from "@/app/components/Footer";
-import Header from "@/app/components/Header";
-import LottieScrollShowcase from "@/app/components/LottieScrollShowcase";
-import SplineShowcase from "@/app/components/SplineShowcase";
+import Header from"@/app/components/Header";
+import HomeWorkTeaser from "@/app/components/home/HomeWorkTeaser";
+import HomeLabTeaser from "@/app/components/home/HomeLabTeaser";
+import HomeDragonTeaser from "@/app/components/home/HomeDragonTeaser";
 
 export default function Home() {
   return (
-    <main>
+    <main className="bg-[#050505] text-white">
       <Header/>
       <Hero />
-      <WorkSection />
-      <MarqueeBanner />
-      <AnimationLab />
-      <SplineShowcase />
-      <LottieScrollShowcase />
-      <DangerBanner />
-      <DndScene />
-      <Text3DCarousel />
-      <BillboardSection/>
-      <div className="relative bg-[#050505]">
-        <div className="last-section-wrapper relative z-10">
-          <ContactSection />
-        </div>
-
-        <Footer />
-      </div>
-      
+      <HomeWorkTeaser />
+      <HomeLabTeaser />
+      <HomeDragonTeaser />
+      <Footer />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef } from "react";
 import gsap from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
@@ -9,14 +10,9 @@ gsap.registerPlugin(TextPlugin);
 
 export default function Hero() {
   const heroRef = useRef<HTMLElement | null>(null);
-  const glowRef = useRef<HTMLDivElement | null>(null);
-  const revealTextRef = useRef<HTMLDivElement | null>(null);
 
   useGSAP(
     () => {
-      const hero = heroRef.current;
-      const glow = glowRef.current;
-      const revealText = revealTextRef.current;
       const typingElement = document.querySelector(".typing-text");
 
       gsap.to(".scroll-dot", {
@@ -35,7 +31,7 @@ export default function Hero() {
         ease: "power1.inOut",
       });
 
-      if (!hero || !glow || !revealText || !typingElement) return;
+      if (!typingElement) return;
 
       const introTl = gsap.timeline();
 
@@ -102,45 +98,7 @@ export default function Hero() {
           .to({}, { duration: 0.3 });
       });
 
-      const moveGlowX = gsap.quickTo(glow, "x", {
-        duration: 0.35,
-        ease: "power3.out",
-      });
-
-      const moveGlowY = gsap.quickTo(glow, "y", {
-        duration: 0.35,
-        ease: "power3.out",
-      });
-
-      const moveRevealX = gsap.quickTo(revealText, "--x", {
-        duration: 0.35,
-        ease: "power3.out",
-        unit: "px",
-      });
-
-      const moveRevealY = gsap.quickTo(revealText, "--y", {
-        duration: 0.35,
-        ease: "power3.out",
-        unit: "px",
-      });
-
-      const handleMouseMove = (e: MouseEvent) => {
-        const rect = hero.getBoundingClientRect();
-
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        moveGlowX(x - 250);
-        moveGlowY(y - 250);
-
-        moveRevealX(x);
-        moveRevealY(y);
-      };
-
-      hero.addEventListener("mousemove", handleMouseMove);
-
       return () => {
-        hero.removeEventListener("mousemove", handleMouseMove);
         typingTl.kill();
         introTl.kill();
       };
@@ -155,6 +113,8 @@ export default function Hero() {
       className="relative min-h-screen overflow-hidden bg-[#050505] px-6 text-white md:px-12"
     >
       <div className="absolute left-[-15%] top-[-20%] h-[600px] w-[600px] rounded-full bg-[#4DA3FF]/20 blur-[150px]" />
+
+      <div className="absolute right-[-12%] bottom-[-20%] h-[500px] w-[500px] rounded-full bg-[#00E5FF]/10 blur-[150px]" />
 
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
 
@@ -182,46 +142,24 @@ export default function Hero() {
           </p>
 
           <div className="hero-buttons mt-10 flex flex-col gap-4 sm:flex-row">
-            <a
-              href="#work"
+            <Link
+              href="/work"
               className="rounded-full bg-[#4DA3FF] px-8 py-4 text-center font-medium text-black hover:bg-[#00E5FF]"
             >
               View Projects
-            </a>
+            </Link>
 
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="rounded-full border border-white/20 px-8 py-4 text-center font-medium text-white hover:border-[#4DA3FF] hover:text-[#4DA3FF]"
             >
               Contact Me
-            </a>
+            </Link>
           </div>
         </div>
       </div>
 
       <div className="pointer-events-none absolute right-8 top-1/2 z-0 hidden -translate-y-1/2 text-right font-heading text-[8rem] font-black leading-[0.85] tracking-tight text-white/[0.03] lg:block">
-        CREATIVE
-        <br />
-        FRONTEND
-        <br />
-        DEVELOPER
-      </div>
-
-      <div
-        ref={glowRef}
-        className="pointer-events-none absolute left-0 top-0 z-[1] h-[500px] w-[500px] rounded-full bg-[#4DA3FF]/20 blur-[110px] mix-blend-screen"
-      />
-
-      <div
-        ref={revealTextRef}
-        className="pointer-events-none absolute right-8 top-1/2 z-[2] hidden -translate-y-1/2 text-right font-heading text-[8rem] font-black leading-[0.85] tracking-tight text-black lg:block"
-        style={{
-          maskImage:
-            "radial-gradient(circle 230px at var(--x, 50%) var(--y, 50%), black 0%, transparent 70%)",
-          WebkitMaskImage:
-            "radial-gradient(circle 230px at var(--x, 50%) var(--y, 50%), black 0%, transparent 70%)",
-        }}
-      >
         CREATIVE
         <br />
         FRONTEND
