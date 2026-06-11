@@ -107,7 +107,7 @@ export default function Footer() {
         </div>
 
         {/* Huge Background Text */}
-        <div className="pointer-events-none absolute bottom-20 left-1/2 -translate-x-1/2 whitespace-nowrap font-heading text-[18vw] font-black leading-none text-white/[0.03]">
+        <div className="pointer-events-none absolute bottom-32 left-1/2 -translate-x-1/2 whitespace-nowrap font-heading text-[18vw] font-black leading-none text-white/[0.03] md:bottom-20">
           CONTACT
         </div>
 
