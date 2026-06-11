@@ -201,7 +201,7 @@ export default function ContactSection() {
             Contact
           </p>
 
-          <h2 className="contact-title font-heading text-6xl leading-[0.9] md:text-8xl" style={{ fontWeight: 300 }}>
+          <h2 className="contact-title font-heading text-5xl leading-[0.9] md:text-8xl" style={{ fontWeight: 300 }}>
             {lines.map((line, lineIndex) => (
               <span key={lineIndex} className="block">
                 {line.split("").map((char, charIndex) => (
