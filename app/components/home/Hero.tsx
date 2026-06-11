@@ -132,7 +132,8 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 flex min-h-screen items-center">
         <div>
-          <p className="hero-label mb-6 text-sm uppercase tracking-[0.35em] text-[#4DA3FF]">
+          <p className="hero-label mb-6 text-sm uppercase tracking-[0.35em] text-[#4DA3FF]"  
+          style={{marginTop:"-40px"}}>
             Front-End Developer — Motion & Interaction
           </p>
 
@@ -153,7 +154,7 @@ export default function Hero() {
             animations, and interactions people actually notice.
           </p>
 
-          <div className="hero-buttons mt-10 flex flex-col gap-4 sm:flex-row">
+          <div className="hero-buttons mt-10 flex flex-wrap gap-4">
             <Link
               href="/work"
               className="rounded-full bg-[#4DA3FF] px-8 py-4 text-center font-medium text-black hover:bg-[#00E5FF] transition-colors duration-200"

@@ -70,16 +70,20 @@ export default function BillboardSection() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const textRef = useRef<HTMLDivElement | null>(null);
   const imageWrapRef = useRef<HTMLDivElement | null>(null);
+  const mobileImageRef = useRef<HTMLDivElement | null>(null);
   const glowRef = useRef<HTMLDivElement | null>(null);
   const billboardTitleRef = useRef<HTMLParagraphElement | null>(null);
+  const mobileBillboardTitleRef = useRef<HTMLParagraphElement | null>(null);
 
   useGSAP(
     () => {
       const section = sectionRef.current;
       const text = textRef.current;
       const imageWrap = imageWrapRef.current;
+      const mobileImage = mobileImageRef.current;
       const glow = glowRef.current;
       const billboardTitle = billboardTitleRef.current;
+      const mobileBillboardTitle = mobileBillboardTitleRef.current;
 
       if (!section || !text || !imageWrap || !glow || !billboardTitle) return;
 
@@ -116,7 +120,27 @@ export default function BillboardSection() {
             "<"
           )
           .to(
+            mobileImage ?? {},
+            {
+              opacity: 0.75,
+              scale: 0.96,
+              duration: 0.25,
+              ease: "power2.in",
+            },
+            "<"
+          )
+          .to(
             billboardTitle,
+            {
+              opacity: 0,
+              y: 12,
+              duration: 0.2,
+              ease: "power2.in",
+            },
+            "<"
+          )
+          .to(
+            mobileBillboardTitle ?? {},
             {
               opacity: 0,
               y: 12,
@@ -160,24 +184,31 @@ export default function BillboardSection() {
               <p class="mb-5 text-sm uppercase tracking-[0.4em]" style="color:${slide.color}">
                 ${slide.num} / Cyberpunk Showcase
               </p>
-
               <h2 class="font-heading text-5xl font-black leading-[0.95] md:text-7xl">
                 ${slide.title}
               </h2>
-
               <p class="mt-6 max-w-md text-lg leading-relaxed text-white/65">
                 ${slide.text}
               </p>
             `;
 
+            // Update desktop image
             const img = imageWrap.querySelector("img");
+            if (img) img.src = slide.image;
 
-            if (img) {
-              img.src = slide.image;
+            // Update mobile image
+            if (mobileImage) {
+              const mobileImg = mobileImage.querySelector("img");
+              if (mobileImg) mobileImg.src = slide.image;
             }
 
             billboardTitle.textContent = slide.billboardTitle;
             billboardTitle.style.color = slide.color;
+
+            if (mobileBillboardTitle) {
+              mobileBillboardTitle.textContent = slide.billboardTitle;
+              mobileBillboardTitle.style.color = slide.color;
+            }
           })
           .fromTo(
             text,
@@ -199,8 +230,29 @@ export default function BillboardSection() {
             },
             "<"
           )
+          .to(
+            mobileImage ?? {},
+            {
+              opacity: 1,
+              scale: 1,
+              duration: 0.45,
+              ease: "power3.out",
+            },
+            "<"
+          )
           .fromTo(
             billboardTitle,
+            { opacity: 0, y: 12 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.35,
+              ease: "power3.out",
+            },
+            "<"
+          )
+          .fromTo(
+            mobileBillboardTitle ?? {},
             { opacity: 0, y: 12 },
             {
               opacity: 1,
@@ -260,8 +312,9 @@ export default function BillboardSection() {
         className="absolute right-[18%] top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full opacity-30 blur-[150px]"
       />
 
-      <div className="relative z-10 grid min-h-screen items-center gap-14 lg:grid-cols-2">
-        <div ref={textRef}  style={{zIndex: 100,}}>
+      <div className="relative z-10 grid min-h-screen items-center gap-6 lg:gap-14 lg:grid-cols-2">
+        {/* Text */}
+        <div ref={textRef} style={{ zIndex: 100 }}>
           <p className="mb-5 text-sm uppercase tracking-[0.4em] text-[#00E5FF]">
             01 / Cyberpunk Showcase
           </p>
@@ -271,24 +324,45 @@ export default function BillboardSection() {
           </h2>
 
           <p className="mt-6 max-w-md text-lg leading-relaxed text-white/65">
-            A cyberpunk-inspired interface — layered glow, kinetic type, and a UI built for atmosphere.
+            A cyberpunk-inspired interface — layered glow, kinetic type, and a
+            UI built for atmosphere.
           </p>
         </div>
 
+        {/* Mobile image — flat, no 3D transforms */}
         <div
-          ref={imageWrapRef}
-          className="relative mx-auto aspect-[16/10] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_40px_140px_rgba(0,229,255,0.2)]"
+          ref={mobileImageRef}
+          className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-white/10 bg-black lg:hidden"
         >
           <img
             src={slides[0].image}
             alt="Cyberpunk billboard"
             className="h-full w-full object-cover"
           />
-
           <div className="absolute inset-0 bg-gradient-to-tr from-black/70 via-transparent to-cyan-400/20" />
-
           <div className="billboard-flicker absolute inset-0 bg-white/10 mix-blend-overlay" />
+          <div className="absolute inset-x-0 bottom-0 bg-black/60 p-4 backdrop-blur-md">
+            <p
+              ref={mobileBillboardTitleRef}
+              className="font-heading text-base font-black uppercase tracking-[0.25em] text-[#00E5FF]"
+            >
+              Digital Campaign
+            </p>
+          </div>
+        </div>
 
+        {/* Desktop image — 3D transforms via GSAP */}
+        <div
+          ref={imageWrapRef}
+          className="relative mx-auto hidden aspect-[16/10] w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-[0_40px_140px_rgba(0,229,255,0.2)] lg:block"
+        >
+          <img
+            src={slides[0].image}
+            alt="Cyberpunk billboard"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/70 via-transparent to-cyan-400/20" />
+          <div className="billboard-flicker absolute inset-0 bg-white/10 mix-blend-overlay" />
           <div className="absolute inset-x-0 bottom-0 bg-black/60 p-5 backdrop-blur-md">
             <p
               ref={billboardTitleRef}

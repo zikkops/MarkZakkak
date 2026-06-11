@@ -9,93 +9,113 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 export default function DndScene() {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef   = useRef<HTMLVideoElement | null>(null);
 
-useGSAP(
-  () => {
-    const section = sectionRef.current;
-    const video = videoRef.current;
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      const video   = videoRef.current;
+      if (!section || !video) return;
 
-    if (!section || !video) return;
+      video.play().catch(() => {});
 
-    // Video plays on loop constantly — no scroll dependency
-    video.play().catch(() => {});
+      const isMobile = window.innerWidth < 768;
 
-    gsap.set(".dnd-card", {
-      opacity: 0,
-      y: 80,
-      scale: 0.9,
-    });
+      // ── Initial states ──────────────────────────────────────────────────
+      gsap.set(".dnd-card", { opacity: 0, y: isMobile ? 40 : 80, scale: 0.9 });
+      gsap.set(".boss-card", {
+        opacity: 0,
+        x: isMobile ? 0 : 180,
+        y: isMobile ? 60 : 0,
+        scale: 0.95,
+      });
 
-    gsap.set(".boss-card", {
-      opacity: 0,
-      x: 180,
-      scale: 0.95,
-    });
+      const ENTER  = 1.0;
+      const HOLD   = 1.5;
+      const EXIT   = 0.8;
+      const STRIDE = ENTER + HOLD + EXIT; // one card per stride
 
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "+=5000",
-        scrub: 1.5,
-        pin: true,
-      },
-    });
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: "+=5000",
+          scrub: 1.5,
+          pin: true,
+        },
+      });
 
-    // Each card: enter → hold → float — they all stay visible until boss appears
-    const ENTER  = 1.0;
-    const HOLD   = 1.2;
-    const STRIDE = ENTER + HOLD + 0.8; // ~3.0 between each card start
+      const cards = gsap.utils.toArray<HTMLElement>(".dnd-card");
 
-    const cards = gsap.utils.toArray<HTMLElement>(".dnd-card");
+      if (isMobile) {
+        // ── MOBILE: one at a time — fade in → hold → fade out ──────────
+        cards.forEach((card, i) => {
+          const o = i * STRIDE;
+          tl.fromTo(
+            card,
+            { opacity: 0, y: 40, scale: 0.92 },
+            { opacity: 1, y: 0, scale: 1, duration: ENTER, ease: "power3.out" },
+            o
+          );
+          tl.to(
+            card,
+            { opacity: 0, y: -30, scale: 0.92, duration: EXIT, ease: "power2.in" },
+            o + ENTER + HOLD
+          );
+        });
+      } else {
+        // ── DESKTOP: all enter, stay together, exit together ────────────
+        cards.forEach((card, i) => {
+          tl.fromTo(
+            card,
+            { opacity: 0, y: 80, scale: 0.9 },
+            { opacity: 1, y: 0, scale: 1, duration: ENTER, ease: "power3.out" },
+            i * (ENTER + 0.3)
+          );
+        });
+      }
 
-    cards.forEach((card, i) => {
-      const o = i * STRIDE;
+      // Boss start: after last card finishes (mobile) or after all entered (desktop)
+      const bossStart = isMobile
+        ? cards.length * STRIDE + 0.5
+        : cards.length * (ENTER + 0.3) + HOLD;
 
-      // Enter
-      tl.fromTo(card,
-        { opacity: 0, y: 80, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: ENTER, ease: "power3.out" },
-        o
+      // On desktop, cards all exit together before boss
+      if (!isMobile) {
+        tl.to(
+          ".dnd-card",
+          { opacity: 0, y: -60, scale: 0.92, stagger: 0.1, duration: 0.8, ease: "power2.in" },
+          bossStart - 0.6
+        );
+      }
+
+      // Boss enters
+      tl.fromTo(
+        ".boss-card",
+        { opacity: 0, x: isMobile ? 0 : 180, y: isMobile ? 60 : 0, scale: 0.95 },
+        { opacity: 1, x: 0, y: 0, scale: 1, duration: 1.2, ease: "power4.out" },
+        bossStart
       );
-      // Cards just hold in place — no float
-    });
 
-    // All three cards fade out together when boss arrives
-    const bossStart = cards.length * STRIDE + 1.0;
+      // Boss floats
+      tl.to(
+        ".boss-card",
+        { y: -12, duration: 1.5, ease: "sine.inOut" },
+        bossStart + 1.5
+      );
 
-    tl.to(".dnd-card",
-      { opacity: 0, y: -60, scale: 0.92, stagger: 0.1, duration: 0.8, ease: "power2.in" },
-      bossStart - 0.6
-    );
-
-    // Boss enters right as cards finish fading
-    tl.fromTo(".boss-card",
-      { opacity: 0, x: 180, scale: 0.95 },
-      { opacity: 1, x: 0, scale: 1, duration: 1.2, ease: "power4.out" },
-      bossStart
-    );
-
-    // Boss floats
-    tl.to(".boss-card",
-      { y: -12, duration: 1.5, ease: "sine.inOut" },
-      bossStart + 1.5
-    );
-
-    return () => {
-      tl.kill();
-    };
-  },
-  { scope: sectionRef }
-);
+      return () => { tl.kill(); };
+    },
+    { scope: sectionRef }
+  );
 
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden bg-black text-white"
+      className="relative overflow-hidden bg-black text-white"
+      style={{ height: "100vh" }}
     >
-      {/* Full background video */}
+      {/* Full background video — fills exactly 100vh */}
       <video
         ref={videoRef}
         src="/videos/dnd-scene.webm"
@@ -114,17 +134,23 @@ useGSAP(
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20" />
 
       {/* Section title */}
-      <div className="absolute left-8 top-8 z-20 md:left-12 md:top-12">
-        <p className="text-sm uppercase tracking-[0.35em] text-[#4DA3FF]">
+      <div className="absolute left-4 top-6 z-20 md:left-12 md:top-12">
+        <p className="text-xs uppercase tracking-[0.3em] text-[#4DA3FF] md:text-sm md:tracking-[0.35em]">
           Character Scene
         </p>
-        <h2 className="mt-4 font-heading text-5xl font-black md:text-7xl">
+        <h2 className="mt-2 font-heading text-4xl font-black md:mt-4 md:text-7xl">
           Party vs Dragon
         </h2>
       </div>
 
-      {/* ── Fighter ── */}
-      <div className="dnd-card absolute left-[6%] top-[36%] z-20 w-64 rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
+      {/* ── Fighter ──
+          Desktop: absolute scattered position
+          Mobile:  centered, vertically centered           ── */}
+      <div className="dnd-card
+        absolute z-20
+        left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
+        md:left-[6%] md:top-[36%] md:w-64 md:translate-x-0 md:translate-y-0
+        rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
         <p className="text-xs uppercase tracking-[0.3em] text-[#4DA3FF]">Fighter</p>
         <h3 className="mt-3 font-heading text-2xl font-black">The Shield</h3>
         <p className="mt-3 text-sm leading-relaxed text-white/60">
@@ -138,7 +164,11 @@ useGSAP(
       </div>
 
       {/* ── Paladin ── */}
-      <div className="dnd-card absolute bottom-[16%] left-[24%] z-20 w-64 rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
+      <div className="dnd-card
+        absolute z-20
+        left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
+        md:bottom-[16%] md:left-[24%] md:top-auto md:w-64 md:translate-x-0 md:translate-y-0
+        rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
         <p className="text-xs uppercase tracking-[0.3em] text-[#8B5CF6]">Paladin</p>
         <h3 className="mt-3 font-heading text-2xl font-black">The Divine</h3>
         <p className="mt-3 text-sm leading-relaxed text-white/60">
@@ -152,7 +182,11 @@ useGSAP(
       </div>
 
       {/* ── Ranger ── */}
-      <div className="dnd-card absolute right-[28%] top-[28%] z-20 w-64 rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
+      <div className="dnd-card
+        absolute z-20
+        left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
+        md:right-[28%] md:top-[28%] md:w-64 md:translate-x-0 md:translate-y-0 md:left-auto
+        rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-md">
         <p className="text-xs uppercase tracking-[0.3em] text-[#00E5FF]">Ranger</p>
         <h3 className="mt-3 font-heading text-2xl font-black">The Hunter</h3>
         <p className="mt-3 text-sm leading-relaxed text-white/60">
@@ -165,31 +199,32 @@ useGSAP(
         </div>
       </div>
 
-      {/* ── Boss: Ancient Dragon ── */}
-      <div className="boss-card absolute right-[6%] top-1/2 z-30 w-[390px] -translate-y-1/2 rounded-[2rem] border border-red-500/30 bg-black/75 p-8 backdrop-blur-xl">
+      {/* ── Boss: Ancient Dragon ──
+          Desktop: absolute right, vertically centered
+          Mobile:  centered, bottom-anchored              ── */}
+      <div className="boss-card
+        absolute z-30
+        bottom-6 left-1/2 w-[92vw] max-w-sm -translate-x-1/2
+        md:bottom-auto md:right-[6%] md:top-1/2 md:w-[390px] md:max-w-none md:translate-x-0 md:-translate-y-1/2 md:left-auto
+        rounded-[2rem] border border-red-500/30 bg-black/75 p-6 backdrop-blur-xl md:p-8">
         <p className="text-xs uppercase tracking-[0.35em] text-red-500">
           Boss Encounter
         </p>
-
-        <h3 className="mt-4 font-heading text-4xl font-black">
+        <h3 className="mt-3 font-heading text-3xl font-black md:mt-4 md:text-4xl">
           Ancient Dragon
         </h3>
-
-        {/* Dragon dialogue */}
-        <div className="mt-5 rounded-xl border border-red-500/20 bg-red-500/[0.06] p-4">
+        <div className="mt-4 rounded-xl border border-red-500/20 bg-red-500/[0.06] p-4">
           <p className="mb-2 text-[10px] uppercase tracking-widest text-red-500/60">Last Words</p>
           <p className="text-sm italic leading-relaxed text-white/70">
             "Impossible… I have burned kingdoms, outlasted gods…
             I cannot fall to — to mortals. This… is not… the end…"
           </p>
         </div>
-
-        <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
+        <div className="mt-4 grid grid-cols-2 gap-3 text-sm md:mt-6">
           <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
             <span className="text-white/40">Threat</span>
             <p className="font-heading text-xl">Extreme</p>
           </div>
-
           <div className="rounded-xl border border-white/10 bg-white/[0.04] p-3">
             <span className="text-white/40">Status</span>
             <p className="font-heading text-xl text-red-400">Defeated</p>
