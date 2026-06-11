@@ -21,7 +21,6 @@ export default function DndScene() {
 
       const isMobile = window.innerWidth < 768;
 
-      // ── Initial states ──────────────────────────────────────────────────
       gsap.set(".dnd-card", { opacity: 0, y: isMobile ? 40 : 80, scale: 0.9 });
       gsap.set(".boss-card", {
         opacity: 0,
@@ -33,7 +32,7 @@ export default function DndScene() {
       const ENTER  = 1.0;
       const HOLD   = 1.5;
       const EXIT   = 0.8;
-      const STRIDE = ENTER + HOLD + EXIT; // one card per stride
+      const STRIDE = ENTER + HOLD + EXIT;
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -48,7 +47,6 @@ export default function DndScene() {
       const cards = gsap.utils.toArray<HTMLElement>(".dnd-card");
 
       if (isMobile) {
-        // ── MOBILE: one at a time — fade in → hold → fade out ──────────
         cards.forEach((card, i) => {
           const o = i * STRIDE;
           tl.fromTo(
@@ -64,7 +62,6 @@ export default function DndScene() {
           );
         });
       } else {
-        // ── DESKTOP: all enter, stay together, exit together ────────────
         cards.forEach((card, i) => {
           tl.fromTo(
             card,
@@ -75,12 +72,10 @@ export default function DndScene() {
         });
       }
 
-      // Boss start: after last card finishes (mobile) or after all entered (desktop)
       const bossStart = isMobile
         ? cards.length * STRIDE + 0.5
         : cards.length * (ENTER + 0.3) + HOLD;
 
-      // On desktop, cards all exit together before boss
       if (!isMobile) {
         tl.to(
           ".dnd-card",
@@ -89,7 +84,6 @@ export default function DndScene() {
         );
       }
 
-      // Boss enters
       tl.fromTo(
         ".boss-card",
         { opacity: 0, x: isMobile ? 0 : 180, y: isMobile ? 60 : 0, scale: 0.95 },
@@ -97,7 +91,6 @@ export default function DndScene() {
         bossStart
       );
 
-      // Boss floats
       tl.to(
         ".boss-card",
         { y: -12, duration: 1.5, ease: "sine.inOut" },
@@ -113,9 +106,8 @@ export default function DndScene() {
     <section
       ref={sectionRef}
       className="relative overflow-hidden bg-black text-white"
-      style={{ height: "100vh" }}
+      style={{ height: "100vh", maxWidth: "100vw", overflowX: "hidden" }}
     >
-      {/* Full background video — fills exactly 100vh */}
       <video
         ref={videoRef}
         src="/videos/dnd-scene.webm"
@@ -127,13 +119,10 @@ export default function DndScene() {
         className="absolute inset-0 h-full w-full object-cover"
       />
 
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/45" />
 
-      {/* Grid overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20" />
 
-      {/* Section title */}
       <div className="absolute left-4 top-6 z-20 md:left-12 md:top-12">
         <p className="text-xs uppercase tracking-[0.3em] text-[#4DA3FF] md:text-sm md:tracking-[0.35em]">
           Character Scene
@@ -143,9 +132,6 @@ export default function DndScene() {
         </h2>
       </div>
 
-      {/* ── Fighter ──
-          Desktop: absolute scattered position
-          Mobile:  centered, vertically centered           ── */}
       <div className="dnd-card
         absolute z-20
         left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
@@ -163,7 +149,6 @@ export default function DndScene() {
         </div>
       </div>
 
-      {/* ── Paladin ── */}
       <div className="dnd-card
         absolute z-20
         left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
@@ -181,7 +166,6 @@ export default function DndScene() {
         </div>
       </div>
 
-      {/* ── Ranger ── */}
       <div className="dnd-card
         absolute z-20
         left-1/2 top-1/2 w-[88vw] max-w-sm -translate-x-1/2 -translate-y-1/2
@@ -199,9 +183,6 @@ export default function DndScene() {
         </div>
       </div>
 
-      {/* ── Boss: Ancient Dragon ──
-          Desktop: absolute right, vertically centered
-          Mobile:  centered, bottom-anchored              ── */}
       <div className="boss-card
         absolute z-30
         bottom-6 left-1/2 w-[92vw] max-w-sm -translate-x-1/2

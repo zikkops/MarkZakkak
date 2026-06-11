@@ -112,8 +112,8 @@ export default function Hero() {
       ref={heroRef}
       className="relative min-h-screen overflow-hidden bg-[#050505] px-6 text-white md:px-12"
     >
-      {/* Spline background */}
-      <div className="absolute inset-0 z-0 h-full w-full">
+      {/* Spline background — hidden on mobile */}
+      <div className="absolute inset-0 z-0 h-full w-full hidden md:block">
         <iframe
           src="https://my.spline.design/3ddesigntextcopycopy-fzGE4AyjaI6zVIhiHFnHYgzu-YkR/"
           frameBorder="0"
@@ -126,8 +126,22 @@ export default function Hero() {
         />
       </div>
 
+      {/* Video background — mobile only */}
+      <div className="absolute inset-0 z-0 h-full w-full block md:hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="h-full w-full object-cover"
+        >
+          <source src="/videos/bg-video-hero-mobile.mp4" type="video/mp4" />
+        </video>
+      </div>
+
       {/* Dark overlay — pointer-events-none so Spline stays fully interactive */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-black/40" />
+      {/* Dark overlay */}
+    <div className="pointer-events-none absolute inset-0 z-[1] bg-black/65 md:bg-black/40" />
 
       {/* Content */}
       <div className="relative z-10 flex min-h-screen items-center">

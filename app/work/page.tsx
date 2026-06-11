@@ -6,7 +6,7 @@ import Header from "@/app/components/Header";
 
 export default function WorkPage() {
   return (
-    <main className="bg-[#050505] text-white">
+    <main className="bg-[#050505] text-white overflow-x-hidden">
         <Header/>
       <section className="relative overflow-hidden px-6 pb-20 pt-40 md:px-12">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20" />
