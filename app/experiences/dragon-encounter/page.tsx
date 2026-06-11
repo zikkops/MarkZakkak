@@ -85,7 +85,8 @@ export default function DragonEncounterPage() {
       },
     });
 
-    gsap.fromTo(".merged-glow",
+    gsap.fromTo(
+      ".merged-glow",
       { scale: 1, opacity: 0.3 },
       {
         scale: 6,
@@ -109,8 +110,8 @@ export default function DragonEncounterPage() {
 
     gsap.set(".party-inner", { opacity: 0, y: 80 });
     scrollTl
-      .to(".party-inner",  { opacity: 1, y: 0, ease: "power3.out" }, 0.35)
-      .from(".party-card", { y: 60, opacity: 0, stagger: 0.1, ease: "power3.out" }, 0.5)
+      .to(".party-inner",   { opacity: 1, y: 0, ease: "power3.out" }, 0.35)
+      .from(".party-card",  { y: 60, opacity: 0, stagger: 0.1, ease: "power3.out" }, 0.5)
       .from(".party-spline", {
         y: 40, opacity: 0, scale: 0.95,
         transformOrigin: "center bottom",
@@ -149,18 +150,24 @@ export default function DragonEncounterPage() {
   }, { scope: mergedRef });
 
   useGSAP(() => {
-    const section = behindRef.current;
-    if (!section) return;
+  const section = behindRef.current;
+  if (!section) return;
 
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger: section, start: "top 72%" },
-    });
+  const isMobile = window.innerWidth < 768;
 
-    tl.from(".behind-kicker",    { y: 20, opacity: 0, duration: 0.55, ease: "power3.out" })
-      .from(".behind-title span", { y: 70, opacity: 0, duration: 0.85, stagger: 0.09, ease: "power4.out" }, "-=0.25")
-      .from(".behind-item",       { x: 30, opacity: 0, duration: 0.55, stagger: 0.08, ease: "power3.out" }, "-=0.4")
-      .from(".behind-cta",        { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
-  }, { scope: behindRef });
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: isMobile ? "top 90%" : "top 80%",
+      toggleActions: "play none none none",
+    },
+  });
+
+  tl.from(".behind-kicker",     { y: 20, opacity: 0, duration: 0.55, ease: "power3.out" })
+    .from(".behind-title span", { y: 70, opacity: 0, duration: 0.85, stagger: 0.09, ease: "power4.out" }, "-=0.25")
+    .from(".behind-item",       { x: 30, opacity: 0, duration: 0.55, stagger: 0.08, ease: "power3.out" }, "-=0.4")
+    .from(".behind-cta",        { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
+}, { scope: behindRef });
 
   return (
     <main className="bg-black text-white overflow-x-hidden">
@@ -175,7 +182,6 @@ export default function DragonEncounterPage() {
         <div className="merged-glow pointer-events-none absolute left-1/2 top-[40%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-600/30 blur-[140px]" />
         <div ref={particlesRef} className="pointer-events-none absolute inset-0 overflow-hidden" />
 
-        {/* Hero */}
         <div className="sticky top-0 flex h-screen items-center justify-center text-center">
           <div className="hero-inner relative z-10 mx-auto max-w-5xl">
             <p className="hero-kicker mb-6 text-sm uppercase tracking-[0.4em] text-red-500">
@@ -197,12 +203,11 @@ export default function DragonEncounterPage() {
               href="#encounter"
               className="hero-button mt-10 inline-flex rounded-full border border-red-500/40 px-8 py-4 font-medium text-red-500 transition hover:bg-red-500 hover:text-black"
             >
-              Begin Encounter ↓
+              Begin Encounter
             </a>
           </div>
         </div>
 
-        {/* Party */}
         <div className="relative z-10 mx-auto max-w-7xl px-6 pb-28 pt-0 md:px-12">
           <div className="party-inner">
             <p className="party-kicker mb-6 text-sm uppercase tracking-[0.35em] text-red-500">
@@ -228,13 +233,11 @@ export default function DragonEncounterPage() {
                   <p className="mt-4 text-sm text-white/45">
                     A character callout designed to show cinematic UI storytelling.
                   </p>
-
-                  {/* Spline on desktop, static image on mobile */}
                   {!isMobile && (
-                      <div className="party-spline mt-6 h-[260px] w-full overflow-hidden rounded-2xl">
-                        <SplineScene scene={char.scene} />
-                      </div>
-                    )}
+                    <div className="party-spline mt-6 h-[260px] w-full overflow-hidden rounded-2xl">
+                      <SplineScene scene={char.scene} />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

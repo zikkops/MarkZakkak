@@ -41,6 +41,7 @@ export default function DndScene() {
           end: "+=5000",
           scrub: 1.5,
           pin: true,
+          anticipatePin: 1,
         },
       });
 
@@ -123,7 +124,7 @@ export default function DndScene() {
 
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20" />
 
-      <div className="absolute left-4 top-6 z-20 md:left-12 md:top-12">
+      <div className="absolute left-4 top-6 z-20 md:left-12 md:top-12" style={{marginTop:"100px"}}>
         <p className="text-xs uppercase tracking-[0.3em] text-[#4DA3FF] md:text-sm md:tracking-[0.35em]">
           Character Scene
         </p>
