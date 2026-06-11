@@ -163,7 +163,7 @@ export default function DragonEncounterPage() {
   }, { scope: behindRef });
 
   return (
-    <main className="bg-black text-white">
+    <main className="bg-black text-white overflow-x-hidden">
       <Header />
 
       <section
