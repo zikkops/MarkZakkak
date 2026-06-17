@@ -61,12 +61,33 @@ export default function DragonEncounterPage() {
 
     const sparkTweens: gsap.core.Tween[] = [];
 
+    // Fix: explicitly set elements visible=0 first so there's no FOUC,
+    // then animate them in with fromTo so the end state is always explicit.
+    gsap.set([".hero-kicker", ".hero-title span", ".hero-copy", ".hero-button"], {
+      opacity: 0,
+    });
+
     const entranceTl = gsap.timeline({ delay: 0.1 });
     entranceTl
-      .from(".hero-kicker",     { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" })
-      .from(".hero-title span", { y: 120, opacity: 0, duration: 1, stagger: 0.12, ease: "power4.out" }, "-=0.3")
-      .from(".hero-copy",       { y: 30, opacity: 0, duration: 0.7, ease: "power3.out" }, "-=0.5")
-      .from(".hero-button",     { y: 25, opacity: 0, duration: 0.6, ease: "power3.out" }, "-=0.4");
+      .fromTo(".hero-kicker",
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }
+      )
+      .fromTo(".hero-title span",
+        { y: 120, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, stagger: 0.12, ease: "power4.out" },
+        "-=0.3"
+      )
+      .fromTo(".hero-copy",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" },
+        "-=0.5"
+      )
+      .fromTo(".hero-button",
+        { y: 25, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        "-=0.4"
+      );
 
     gsap.to(".merged-glow", {
       opacity: 0.15,
@@ -201,6 +222,10 @@ export default function DragonEncounterPage() {
             </p>
             <a
               href="#encounter"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("encounter")?.scrollIntoView({ behavior: "smooth" });
+              }}
               className="hero-button mt-10 inline-flex rounded-full border border-red-500/40 px-8 py-4 font-medium text-red-500 transition hover:bg-red-500 hover:text-black"
             >
               Begin Encounter
