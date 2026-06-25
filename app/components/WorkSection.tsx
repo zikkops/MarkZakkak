@@ -10,28 +10,32 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const projects = [
   {
-    title: "Website Concept 01",
-    type: "Frontend / GSAP",
+    title: "Livv",
+    type: "Real Estate / Web Platform",
     image: "/images/project-1.jpg",
     isVideo: false,
+    link: "https://livv.com/",
   },
   {
-    title: "Website Concept 02",
-    type: "WordPress / UI",
+    title: "Taj Best Food",
+    type: "WooCommerce / E-Commerce",
     image: "/images/project-2.jpg",
     isVideo: false,
+    link: "https://tajbestfood.com/",
   },
   {
-    title: "Website Concept 03",
-    type: "React / Motion",
+    title: "88 Degrees Chocolate",
+    type: "WordPress / WooCommerce",
     image: "/images/project-3.jpg",
     isVideo: false,
+    link: "https://88degreeschocolate.com/",
   },
   {
-    title: "Website Concept 04",
-    type: "Creative Landing Page",
+    title: "Otonomus Hotel Las Vegas",
+    type: "Hospitality / AI Innovation",
     image: "/videos/project-4.webm",
     isVideo: true,
+    link: "https://lasvegas.otonomushotel.com/",
   },
 ];
 
@@ -162,8 +166,11 @@ export default function WorkSection() {
 
         <div className="flex flex-col gap-8 overflow-hidden">
           {projects.map((project, index) => (
-            <article
+            <a
               key={index}
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="project-card group relative h-[320px] w-full overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03]"
             >
               <div className="absolute inset-0 overflow-hidden">
@@ -192,7 +199,7 @@ export default function WorkSection() {
                 </p>
                 <h3 className="font-heading text-3xl font-black">{project.title}</h3>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </div>
@@ -219,8 +226,11 @@ export default function WorkSection() {
           </div>
 
           {projects.map((project, index) => (
-            <article
+            <a
               key={index}
+              href={project.link}
+              target="_blank"
+              rel="noopener noreferrer"
               className="project-card group relative h-[520px] w-[75vw] max-w-[760px] shrink-0 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.03]"
             >
               <div className="absolute inset-0 overflow-hidden">
@@ -249,7 +259,7 @@ export default function WorkSection() {
                 </p>
                 <h3 className="font-heading text-4xl font-black">{project.title}</h3>
               </div>
-            </article>
+            </a>
           ))}
         </div>
       </div>
